@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DbUp;
+using QandA.Data;
 
 namespace QandA
 {
@@ -26,6 +27,8 @@ namespace QandA
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IDataRepository, DataRepository>();
+
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
             EnsureDatabase.For.SqlDatabase(connectionString);
 
