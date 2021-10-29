@@ -16,6 +16,8 @@ namespace QandA.Data
             _db = db.GetConnectionString("DefaultConnection");
         }
 
+
+        //Read
         public AnswerGetResponse GetAnswer(int answerId)
         {
             using (var connection = new SqlConnection(_db))
@@ -71,12 +73,62 @@ namespace QandA.Data
             }
         }
 
+
         public bool QuestionExists(int questionId)
         {
             using (var connection = new SqlConnection(_db))
             {
                 connection.Open();
                 return connection.QueryFirst<bool>(@"EXEC dbo.Question_Exists @QuestionId = @QuestionId", new { QuestionId = questionId});
+            }
+        }
+
+        //Write
+
+
+        public QuestionGetSingleResponse PostQuestion(QuestionPostRequest question)
+        {
+            using (var connection = new SqlConnection(_db))
+            {
+                connection.Open();
+                var questionId = connection.QueryFirst<int>(@"EXEC dbo.Question_Post @Title = @Title,
+                                                                                     @Content = @Content,
+                                                                                     @UserId = @UserId,
+                                                                                     @UserName = @UserName,
+                                                                                     @Created = @Created", question);
+                return GetQuestion(questionId);
+            }
+        }
+
+        public QuestionGetSingleResponse PutQuestion(int questionId, QuestionPutRequest question)
+        {
+            using (var connection = new SqlConnection(_db))
+            {
+                connection.Open();
+                connection.Execute(@"EXEC dbo.Question_Put @QuestionId = @QuestionId, @Title = @Title, @Content = @Content",
+                                                    new { QuestionId = questionId, Title = question.Title, Content = question.Content });
+
+                return GetQuestion(questionId);
+            }
+        }
+        public void DeleteQuestion(int questionId)
+        {
+            using (var connection = new SqlConnection(_db))
+            {
+                connection.Open();
+                connection.Execute(@"EXEC dbo.Question_Delete @QuestionId = @QuestionId", new { QuestionId = questionId });
+            }
+        }
+        public AnswerGetResponse PostAnswer(AnswerPostRequest answer)
+        {
+            using (var connection = new SqlConnection(_db))
+            {
+                connection.Open();
+                return connection.QueryFirst<AnswerGetResponse>(@"EXEC dbo.Answer_Post @QuestionId = @QuestionId, 
+                                                                                       @Content = @Content, 
+                                                                                       @UserId = @UserId, 
+                                                                                       @UserName = @UserName, 
+                                                                                       @Created = @Created", answer);
             }
         }
     }

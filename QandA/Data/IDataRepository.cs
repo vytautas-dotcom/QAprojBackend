@@ -8,6 +8,7 @@ namespace QandA.Data
 {
     public interface IDataRepository
     {
+        //Read
         IEnumerable<QuestionGetManyResponse> GetQuestions();
         IEnumerable<QuestionGetManyResponse> GetQuestionsBySearch(string search);
         IEnumerable<QuestionGetManyResponse> GetUnansweredQuestions();
@@ -15,5 +16,10 @@ namespace QandA.Data
         bool QuestionExists(int questionId);
         AnswerGetResponse GetAnswer(int answerId);
 
+        //Write
+        QuestionGetSingleResponse PostQuestion(QuestionPostRequest question);
+        QuestionGetSingleResponse PutQuestion(int questionId, QuestionPutRequest question);
+        void DeleteQuestion(int questionId);
+        AnswerGetResponse PostAnswer(AnswerPostRequest answer);
     }
 }
