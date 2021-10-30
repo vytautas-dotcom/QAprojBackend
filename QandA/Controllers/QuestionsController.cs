@@ -82,5 +82,17 @@ namespace QandA.Controllers
             _dataRepository.DeleteQuestion(questionId);
             return NoContent();
         }
+
+        [HttpPost("answer")]
+        public ActionResult<AnswerGetResponse> PostAnswer(AnswerPostRequest answerPostRequest)
+        {
+            var questionExists = _dataRepository.QuestionExists(answerPostRequest.QuestionId);
+
+            if (!questionExists) return NotFound();
+
+            var savedAnswer = _dataRepository.PostAnswer(answerPostRequest);
+
+            return savedAnswer;
+        }
     }
 }
