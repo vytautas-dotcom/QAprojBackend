@@ -86,7 +86,7 @@ namespace QandA.Data
         //Write
 
 
-        public QuestionGetSingleResponse PostQuestion(QuestionPostRequest question)
+        public QuestionGetSingleResponse PostQuestion(QuestionPostFullRequest question)
         {
             using (var connection = new SqlConnection(_db))
             {
@@ -119,7 +119,7 @@ namespace QandA.Data
                 connection.Execute(@"EXEC dbo.Question_Delete @QuestionId = @QuestionId", new { QuestionId = questionId });
             }
         }
-        public AnswerGetResponse PostAnswer(AnswerPostRequest answer)
+        public AnswerGetResponse PostAnswer(AnswerPostFullRequest answer)
         {
             using (var connection = new SqlConnection(_db))
             {
