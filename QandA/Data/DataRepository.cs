@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using QandA.Models;
+using System.Linq;
 
 namespace QandA.Data
 {
@@ -52,6 +53,23 @@ namespace QandA.Data
             {
                 connection.Open();
                 return connection.Query<QuestionGetManyResponse>(@"EXEC dbo.Question_GetMany");
+            }
+        }
+
+        public IEnumerable<QuestionGetManyResponse> GetQuestionsWithAnswers()
+        {
+            using (var connection = new SqlConnection(_db))
+            {
+                connection.Open();
+                var questions = connection.Query<QuestionGetManyResponse>("EXEC dbo.Question_GetMany");
+
+                foreach (var question in questions)
+                {
+                    question.Answers = connection.Query<AnswerGetResponse>(@"EXEC dbo.Answer_Get_ByQuestionId @QuestionId = @QuestionId",
+                        new { QuestionId = question.QuestionId}).ToList();
+                }
+
+                return questions;
             }
         }
 
