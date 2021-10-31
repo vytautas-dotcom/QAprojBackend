@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DbUp;
 using QandA.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace QandA
 {
@@ -27,6 +28,17 @@ namespace QandA
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = Configuration["Auth0:Authority"];
+                options.Audience = Configuration["Auth0:Audience"];
+            });
+
+
             services.AddScoped<IDataRepository, DataRepository>();
 
             services.AddMemoryCache();
@@ -64,7 +76,7 @@ namespace QandA
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

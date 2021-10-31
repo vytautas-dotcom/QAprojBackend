@@ -6,9 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace QandA.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class QuestionsController : ControllerBase
@@ -22,6 +24,7 @@ namespace QandA.Controllers
             _cache = cache;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public IEnumerable<QuestionGetManyResponse> GetQuestions(string search, bool includeAnswers, int page = 1, int pageSize = 20)
         {
@@ -37,12 +40,14 @@ namespace QandA.Controllers
                 return _dataRepository.GetQuestionsBySearchWithPaging(search, page, pageSize);
         }
 
+        [AllowAnonymous]
         [HttpGet("unanswered")]
         public async Task<IEnumerable<QuestionGetManyResponse>> GetUnansweredQuestions()
         {
             return await _dataRepository.GetUnansweredQuestionsAsync();
         }
 
+        [AllowAnonymous]
         [HttpGet("{questionId}")]
         public ActionResult<QuestionGetSingleResponse> GetQuestion(int questionId)
         {
