@@ -6,6 +6,7 @@ using Microsoft.Data.SqlClient;
 using QandA.Models;
 using System.Linq;
 using static Dapper.SqlMapper;
+using System.Threading.Tasks;
 
 namespace QandA.Data
 {
@@ -117,6 +118,14 @@ namespace QandA.Data
             }
         }
 
+        public async Task<IEnumerable<QuestionGetManyResponse>> GetUnansweredQuestionsAsync()
+        {
+            using (var connection = new SqlConnection(_db))
+            {
+                await connection.OpenAsync();
+                return await connection.QueryAsync<QuestionGetManyResponse>("EXEC dbo.Question_GetUnanswered");
+            }
+        }
 
         public bool QuestionExists(int questionId)
         {
