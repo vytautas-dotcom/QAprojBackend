@@ -29,6 +29,9 @@ namespace QandA
         {
             services.AddScoped<IDataRepository, DataRepository>();
 
+            services.AddMemoryCache();
+            services.AddSingleton<IQuestionCache, QuestionCache>();
+
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
             EnsureDatabase.For.SqlDatabase(connectionString);
 
