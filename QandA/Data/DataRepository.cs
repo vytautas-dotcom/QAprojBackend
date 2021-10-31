@@ -61,15 +61,25 @@ namespace QandA.Data
             using (var connection = new SqlConnection(_db))
             {
                 connection.Open();
-                var questions = connection.Query<QuestionGetManyResponse>("EXEC dbo.Question_GetMany");
 
-                foreach (var question in questions)
-                {
-                    question.Answers = connection.Query<AnswerGetResponse>(@"EXEC dbo.Answer_Get_ByQuestionId @QuestionId = @QuestionId",
-                        new { QuestionId = question.QuestionId}).ToList();
-                }
+                var questionDictionary = new Dictionary<int, QuestionGetManyResponse>();
 
-                return questions;
+                return connection.Query<QuestionGetManyResponse, AnswerGetResponse, QuestionGetManyResponse>
+                    ("EXEC dbo.Question_GetMany_WithAnswers", map: (q, a) =>
+                     {
+                         QuestionGetManyResponse question;
+
+                         if (!questionDictionary.TryGetValue(q.QuestionId, out question))
+                         {
+                             question = q;
+                             question.Answers = new List<AnswerGetResponse>();
+                             questionDictionary.Add(question.QuestionId, question);
+                         }
+                         question.Answers.Add(a);
+                         return question;
+                     }, splitOn: "QuestionId")
+                    .Distinct()
+                    .ToList();
             }
         }
 
