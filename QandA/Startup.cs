@@ -14,6 +14,9 @@ using System.Threading.Tasks;
 using DbUp;
 using QandA.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using QandA.Authorization;
 
 namespace QandA
 {
@@ -28,6 +31,13 @@ namespace QandA
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient();
+            services.AddAuthorization(options =>
+                options.AddPolicy("MustBeQuestionAuthor", policy =>
+                    policy.Requirements.Add(new MustBeQuestionAuthorRequirement())));
+            services.AddScoped<IAuthorizationHandler, MustBeQuestionAuthorHandler>();
+            services.AddHttpContextAccessor();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
