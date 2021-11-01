@@ -72,6 +72,13 @@ namespace QandA
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "QandA", Version = "v1" });
             });
+
+            services.AddCors(options =>
+                options.AddPolicy("CorsPolicy", builder =>
+                    builder
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithOrigins(Configuration["Frontend"])));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -86,6 +93,7 @@ namespace QandA
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors("CorsPolicy");
             app.UseAuthentication();
             app.UseAuthorization();
 
