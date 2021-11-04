@@ -30,7 +30,7 @@ namespace QandA.Authorization
 
             var userId = context.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var question = _dataRepository.GetQuestion(questionIdAsInt);
+            var question = await _dataRepository.GetQuestion(questionIdAsInt);
             if (question == null)
             {
                 context.Succeed(requirement);
